@@ -10,10 +10,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build & Push
-        working-directory: src
+        working-directory: infrastructure
         run: |
-          az bicep build --file ./infrastructure/main.bicep
-          az bicep build --file ./infrastructure/integration.bicep
+          az bicep build --file main.bicep
+          az bicep build --file integration.bicep
       - name: Publish Artifact
         uses: actions/upload-artifact@v2
         with:
