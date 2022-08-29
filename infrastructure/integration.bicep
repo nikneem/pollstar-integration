@@ -40,7 +40,7 @@ resource containerAppEnvironments 'Microsoft.App/managedEnvironments@2022-03-01'
 }
 
 resource containerRegistry 'Microsoft.ContainerRegistry/registries@2022-02-01-preview' = {
-  name: '${defaultResourceName}-acr'
+  name: toLower(replace('${defaultResourceName}-acr', '-', ''))
   location: location
   sku: {
     name: 'Basic'

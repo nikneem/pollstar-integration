@@ -22,7 +22,7 @@ module integrationModule 'integration.bicep' = {
   name: 'IntegrationModule'
   scope: integrationResourceGroup
   params: {
-    defaultResourceName: toLower('${systemName}-int-${environmentName}-${locationAbbreviation}')
+    defaultResourceName: integrationResourceGroupName
     location: location
   }
 }
