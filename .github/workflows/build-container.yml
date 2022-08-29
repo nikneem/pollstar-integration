@@ -23,30 +23,19 @@ jobs:
     needs: [publish-bicep]
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
       - name: Download Artifact
         uses: actions/download-artifact@v2
         with:
           name: bicep-templates
           path: ./infrastructure
+
       - name: Azure Login
         uses: azure/login@v1.4.0
         with:
           creds: ${{ secrets.AZURE_TEST }}
-      - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v0.9.7
-        with:
-          versionSpec: "5.x"
-      - name: Determine Version
-        id: gitversion
-        uses: gittools/actions/gitversion/execute@v0.9.7
-        with:
-          useConfigFile: true
+
       - name: Deploy Infrastructure
         id: arm
         uses: Azure/cli@1.0.4
         with:
-          inlineScript: az deployment sub create --name pollstar-back-end  --location northeurope --template-file ./infrastructure/main.json --parameters ./infrastructure/params.test.json --parameters locationAbbreviation=neu --parameters containerVersion=${{ steps.gitversion.outputs.MajorMinorPatch }}
+          inlineScript: az deployment sub create --name pollstar-back-end  --location northeurope --template-file ./infrastructure/main.json --parameters ./infrastructure/params.test.json
