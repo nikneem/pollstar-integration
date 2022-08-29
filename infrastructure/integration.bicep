@@ -39,6 +39,25 @@ resource containerAppEnvironments 'Microsoft.App/managedEnvironments@2022-03-01'
   }
 }
 
+resource webPubSub 'Microsoft.SignalRService/webPubSub@2021-10-01' = {
+  name: '${defaultResourceName}-pubsub'
+  location: location
+  sku: {
+    capacity: 1
+    tier: 'Basic'
+    name: 'Standard_S1'
+  }
+  properties: {
+    publicNetworkAccess: 'Enabled'
+  }
+  resource hub 'hubs' = {
+    name: 'pollstar'
+    properties: {
+      anonymousConnectPolicy: 'allow'
+    }
+  }
+}
+
 resource containerRegistry 'Microsoft.ContainerRegistry/registries@2022-02-01-preview' = {
   name: toLower(replace('${defaultResourceName}-acr', '-', ''))
   location: location
