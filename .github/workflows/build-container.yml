@@ -38,4 +38,25 @@ jobs:
         id: arm
         uses: Azure/cli@1.0.4
         with:
-          inlineScript: az deployment sub create --name pollstar-back-end  --location northeurope --template-file ./infrastructure/main.json --parameters ./infrastructure/params.test.json
+          inlineScript: az deployment sub create --name pollstar-integration  --location northeurope --template-file ./infrastructure/main.json --parameters ./infrastructure/params.test.json
+
+  infrastructure-complete-test:
+    needs: [infrastructure-incremental-test]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: bicep-templates
+          path: ./infrastructure
+
+      - name: Azure Login
+        uses: azure/login@v1.4.0
+        with:
+          creds: ${{ secrets.AZURE_TEST }}
+
+      - name: Deploy Infrastructure
+        id: arm
+        uses: Azure/cli@1.0.4
+        with:
+          inlineScript: az deployment group create --name pollstar-integration-complete  --resource-group pollstar-int-test-neu --template-file ./infrastructure/integration.json --parameters defaultResourceName=pollstar-int-test-neu --mode complete

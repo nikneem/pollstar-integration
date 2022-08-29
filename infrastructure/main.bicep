@@ -11,7 +11,7 @@ param environmentName string
 param location string = deployment().location
 param locationAbbreviation string
 
-var integrationResourceGroupName = toLower('${systemName}-int-${environmentName}-${locationAbbreviation}')
+var integrationResourceGroupName = toLower('${systemName}-${environmentName}-${locationAbbreviation}')
 
 resource integrationResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: integrationResourceGroupName
