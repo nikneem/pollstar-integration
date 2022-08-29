@@ -20,7 +20,7 @@ jobs:
           path: infrastructure/*.json
 
   infrastructure-incremental-test:
-    needs: [build, publish-bicep]
+    needs: [publish-bicep]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
