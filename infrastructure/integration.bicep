@@ -43,7 +43,7 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2022-02-01-pr
   name: toLower(replace('${defaultResourceName}-acr', '-', ''))
   location: location
   sku: {
-    name: 'Basic'
+    name: 'Standard'
   }
   properties: {
     adminUserEnabled: true
