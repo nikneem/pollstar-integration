@@ -89,10 +89,10 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2022-02-01-pr
 resource availabilityTest 'Microsoft.Insights/webtests@2022-06-15' = [for avchk in availabilityEndpoints: {
   name: avchk.name
   location: location
+  tags: {
+    'hidden-link:${applicationInsights.id}': 'Resource'
+  }
   kind: 'standard'
-  dependsOn: [
-    applicationInsights
-  ]
   properties: {
     SyntheticMonitorId: avchk.name
     Kind: 'standard'
