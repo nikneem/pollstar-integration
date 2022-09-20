@@ -10,6 +10,25 @@ param systemName string
 param environmentName string
 param location string = deployment().location
 param locationAbbreviation string
+param availabilityRegions array
+param availabilityEndpoints array = [
+  {
+    name: 'Users endpoint'
+    endpoint: 'https://pollstar-api.hexmaster.nl/users/health'
+  }
+  {
+    name: 'Sessions endpoint'
+    endpoint: 'https://pollstar-api.hexmaster.nl/sessions/health'
+  }
+  {
+    name: 'Polls endpoint'
+    endpoint: 'https://pollstar-api.hexmaster.nl/polls/health'
+  }
+  {
+    name: 'Votes endpoint'
+    endpoint: 'https://pollstar-api.hexmaster.nl/votes/health'
+  }
+]
 
 var integrationResourceGroupName = toLower('${systemName}-${environmentName}-${locationAbbreviation}')
 
@@ -24,5 +43,7 @@ module integrationModule 'integration.bicep' = {
   params: {
     defaultResourceName: integrationResourceGroupName
     location: location
+    availabilityRegions: availabilityRegions
+    availabilityEndpoints: availabilityEndpoints
   }
 }

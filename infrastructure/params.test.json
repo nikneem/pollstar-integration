@@ -10,6 +10,9 @@
     },
     "locationAbbreviation": {
       "value": "neu"
+    },
+    "availabilityRegions": {
+      "value": ["emea-gb-db3-azr", "us-fl-mia-edge", "apac-sg-sin-azr"]
     }
   }
 }
