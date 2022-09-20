@@ -98,6 +98,7 @@ resource availabilityTest 'Microsoft.Insights/webtests@2022-06-15' = [for avchk 
     Kind: 'standard'
     Frequency: 600
     Name: avchk.name
+    Enabled: true
     Locations: [for loc in availabilityRegions: {
       Id: loc
     }]
