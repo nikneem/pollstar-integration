@@ -11,24 +11,7 @@ param environmentName string
 param location string = deployment().location
 param locationAbbreviation string
 param availabilityRegions array
-param availabilityEndpoints array = [
-  {
-    name: 'Users endpoint'
-    endpoint: 'https://pollstar-api.hexmaster.nl/users/health'
-  }
-  {
-    name: 'Sessions endpoint'
-    endpoint: 'https://pollstar-api.hexmaster.nl/sessions/health'
-  }
-  {
-    name: 'Polls endpoint'
-    endpoint: 'https://pollstar-api.hexmaster.nl/polls/health'
-  }
-  {
-    name: 'Votes endpoint'
-    endpoint: 'https://pollstar-api.hexmaster.nl/votes/health'
-  }
-]
+param availabilityEndpoints array
 
 var integrationResourceGroupName = toLower('${systemName}-${environmentName}-${locationAbbreviation}')
 
