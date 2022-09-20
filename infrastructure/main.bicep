@@ -41,7 +41,9 @@ module integrationModule 'integration.bicep' = {
   name: 'IntegrationModule'
   scope: integrationResourceGroup
   params: {
-    defaultResourceName: integrationResourceGroupName
+    environmentName: environmentName
+    locationAbbreviation: locationAbbreviation
+    systemName: systemName
     location: location
     availabilityRegions: availabilityRegions
     availabilityEndpoints: availabilityEndpoints

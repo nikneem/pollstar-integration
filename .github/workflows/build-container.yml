@@ -60,4 +60,4 @@ jobs:
         id: arm
         uses: Azure/cli@1.0.4
         with:
-          inlineScript: az deployment group create --name pollstar-integration-complete  --resource-group pollstar-int-test-neu --template-file ./infrastructure/integration.json --parameters defaultResourceName=pollstar-int-test-neu --mode complete
+          inlineScript: az deployment group create --name pollstar-integration-complete  --resource-group pollstar-int-test-neu --template-file ./infrastructure/integration.json --parameters ./infrastructure/params.test.json --mode complete

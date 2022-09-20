@@ -1,7 +1,17 @@
-param defaultResourceName string
+param systemName string
+
+@allowed([
+  'dev'
+  'test'
+  'prod'
+])
+param environmentName string
 param location string = resourceGroup().location
+param locationAbbreviation string
 param availabilityRegions array
 param availabilityEndpoints array
+
+var defaultResourceName = toLower('${systemName}-${environmentName}-${locationAbbreviation}')
 
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-12-01-preview' = {
   name: '${defaultResourceName}-log'
