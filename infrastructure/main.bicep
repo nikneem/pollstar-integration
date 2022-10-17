@@ -10,7 +10,6 @@ param systemName string
 param environmentName string
 param location string = deployment().location
 param locationAbbreviation string
-param queues array
 param availabilityRegions array
 param availabilityEndpoints array
 
@@ -29,7 +28,6 @@ module integrationModule 'integration.bicep' = {
     locationAbbreviation: locationAbbreviation
     systemName: systemName
     location: location
-    queues: queues
     availabilityRegions: availabilityRegions
     availabilityEndpoints: availabilityEndpoints
   }
