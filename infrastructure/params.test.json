@@ -11,6 +11,9 @@
     "locationAbbreviation": {
       "value": "neu"
     },
+    "queues": {
+      "value": ["votes"]
+    },
     "availabilityRegions": {
       "value": ["emea-gb-db3-azr", "us-fl-mia-edge", "apac-sg-sin-azr"]
     },

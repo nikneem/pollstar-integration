@@ -10,6 +10,7 @@ param location string = resourceGroup().location
 param locationAbbreviation string
 param availabilityRegions array
 param availabilityEndpoints array
+param queues array
 
 var defaultResourceName = toLower('${systemName}-${environmentName}-${locationAbbreviation}')
 
@@ -95,6 +96,20 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2022-02-01-pr
 
   }
 }
+
+resource serviceBus 'Microsoft.ServiceBus/namespaces@2022-01-01-preview' = {
+  name: '${defaultResourceName}-sb'
+  location: location
+  sku: {
+    name: 'Standard'
+    tier: 'Standard'
+  }
+}
+
+resource serviceBusQueues 'Microsoft.ServiceBus/namespaces/queues@2022-01-01-preview' = [for queue in queues: {
+  name: queue
+  parent: serviceBus
+}]
 
 resource availabilityTest 'Microsoft.Insights/webtests@2022-06-15' = [for avchk in availabilityEndpoints: {
   name: avchk.name
