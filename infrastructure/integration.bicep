@@ -97,7 +97,7 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2022-02-01-pr
 }
 
 resource serviceBus 'Microsoft.ServiceBus/namespaces@2022-01-01-preview' = {
-  name: '${defaultResourceName}-sb'
+  name: '${defaultResourceName}-bus'
   location: location
   sku: {
     name: 'Standard'
