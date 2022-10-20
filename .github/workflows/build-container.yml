@@ -8,14 +8,14 @@ jobs:
   publish-bicep:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Build & Push
         working-directory: infrastructure
         run: |
           az bicep build --file main.bicep
           az bicep build --file integration.bicep
       - name: Publish Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: bicep-templates
           path: infrastructure/*.json
@@ -46,7 +46,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download Artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: bicep-templates
           path: ./infrastructure
@@ -54,7 +54,7 @@ jobs:
       - name: Azure Login
         uses: azure/login@v1.4.0
         with:
-          creds: ${{ secrets.AZURE_TEST }}
+          creds: ${{ secrets.AZURE_PROD }}
 
       - name: Deploy Infrastructure
         id: arm
