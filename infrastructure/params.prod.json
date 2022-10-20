@@ -6,7 +6,7 @@
       "value": "pollstar-int"
     },
     "environmentName": {
-      "value": "test"
+      "value": "prod"
     },
     "locationAbbreviation": {
       "value": "neu"

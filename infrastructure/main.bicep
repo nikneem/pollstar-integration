@@ -12,6 +12,11 @@ param location string = deployment().location
 param locationAbbreviation string
 param availabilityRegions array
 param availabilityEndpoints array
+param webPubSubSku object = {
+  capacity: 1
+  tier: 'Free'
+  name: 'Free_F1'
+}
 
 var integrationResourceGroupName = toLower('${systemName}-${environmentName}-${locationAbbreviation}')
 
@@ -30,5 +35,6 @@ module integrationModule 'integration.bicep' = {
     location: location
     availabilityRegions: availabilityRegions
     availabilityEndpoints: availabilityEndpoints
+    webPubSubSku: webPubSubSku
   }
 }

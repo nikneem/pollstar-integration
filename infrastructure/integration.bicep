@@ -10,6 +10,7 @@ param location string = resourceGroup().location
 param locationAbbreviation string
 param availabilityRegions array
 param availabilityEndpoints array
+param webPubSubSku object
 
 var defaultResourceName = toLower('${systemName}-${environmentName}-${locationAbbreviation}')
 
@@ -55,11 +56,7 @@ resource containerAppEnvironments 'Microsoft.App/managedEnvironments@2022-03-01'
 resource webPubSub 'Microsoft.SignalRService/webPubSub@2021-10-01' = {
   name: '${defaultResourceName}-pubsub'
   location: location
-  sku: {
-    capacity: 1
-    tier: 'Basic'
-    name: 'Standard_S1'
-  }
+  sku: webPubSubSku
   properties: {
     publicNetworkAccess: 'Enabled'
   }
