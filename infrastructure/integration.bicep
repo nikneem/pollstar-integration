@@ -120,8 +120,8 @@ resource webPubSubConfigurationValue 'Microsoft.AppConfiguration/configurationSt
   name: 'WebPubSub'
   parent: appConfig
   properties: {
-    contentType: 'text/plain'
-    value: webPubSub.listKeys().primaryConnectionString
+    contentType: 'application/vnd.microsoft.appconfig.keyvaultref+json;charset=utf-8'
+    value: '{"uri":"${webPubSubSecret.properties.secretUri}"}'
   }
 }
 
