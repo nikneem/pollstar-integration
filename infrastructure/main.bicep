@@ -12,6 +12,7 @@ param location string = deployment().location
 param locationAbbreviation string
 param availabilityRegions array
 param availabilityEndpoints array
+param developersGroup string
 param webPubSubSku object = {
   capacity: 1
   tier: 'Free'
@@ -36,5 +37,6 @@ module integrationModule 'integration.bicep' = {
     availabilityRegions: availabilityRegions
     availabilityEndpoints: availabilityEndpoints
     webPubSubSku: webPubSubSku
+    developersGroup: developersGroup
   }
 }

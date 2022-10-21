@@ -11,8 +11,46 @@ param locationAbbreviation string
 param availabilityRegions array
 param availabilityEndpoints array
 param webPubSubSku object
+param developersGroup string
 
 var defaultResourceName = toLower('${systemName}-${environmentName}-${locationAbbreviation}')
+
+resource configurationDataReaderRole 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' existing = {
+  scope: resourceGroup()
+  name: '516239f1-63e1-4d78-a4de-a74fb236a071'
+}
+resource allowContributorForDevelopmentTeam 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid('${developersGroup}-${configurationDataReaderRole.name}')
+  properties: {
+    principalId: developersGroup
+    principalType: 'Group'
+    roleDefinitionId: configurationDataReaderRole.id
+  }
+}
+
+resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
+  name: '${defaultResourceName}-kv'
+  location: location
+  properties: {
+    sku: {
+      family: 'A'
+      name: 'standard'
+    }
+    tenantId: subscription().tenantId
+    accessPolicies: [
+      {
+        objectId: developersGroup
+        tenantId: subscription().tenantId
+        permissions: {
+          secrets: [
+            'list'
+            'get'
+          ]
+        }
+      }
+    ]
+  }
+}
 
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-12-01-preview' = {
   name: '${defaultResourceName}-log'
@@ -28,6 +66,7 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-12
     publicNetworkAccessForQuery: 'Enabled'
   }
 }
+
 resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
   name: '${defaultResourceName}-ai'
   location: location
@@ -37,6 +76,7 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
     Application_Type: 'web'
   }
 }
+
 resource containerAppEnvironments 'Microsoft.App/managedEnvironments@2022-03-01' = {
   name: '${defaultResourceName}-env'
   location: location
@@ -53,6 +93,7 @@ resource containerAppEnvironments 'Microsoft.App/managedEnvironments@2022-03-01'
   }
 }
 
+// Web pubsub
 resource webPubSub 'Microsoft.SignalRService/webPubSub@2021-10-01' = {
   name: '${defaultResourceName}-pubsub'
   location: location
@@ -65,6 +106,22 @@ resource webPubSub 'Microsoft.SignalRService/webPubSub@2021-10-01' = {
     properties: {
       anonymousConnectPolicy: 'allow'
     }
+  }
+}
+resource webPubSubSecret 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
+  name: 'WebPubSub'
+  parent: keyVault
+  properties: {
+    contentType: 'text/plain'
+    value: webPubSub.listKeys().primaryConnectionString
+  }
+}
+resource webPubSubConfigurationValue 'Microsoft.AppConfiguration/configurationStores/keyValues@2022-05-01' = {
+  name: 'WebPubSub'
+  parent: appConfig
+  properties: {
+    contentType: 'text/plain'
+    value: webPubSub.listKeys().primaryConnectionString
   }
 }
 
@@ -123,6 +180,24 @@ resource availabilityTest 'Microsoft.Insights/webtests@2022-06-15' = [for avchk 
     }
   }
 }]
+
+resource serviceBusName 'Microsoft.AppConfiguration/configurationStores/keyValues@2022-05-01' = {
+  name: 'ServiceBusName'
+  parent: appConfig
+  properties: {
+    contentType: 'text/plain'
+    value: serviceBus.name
+  }
+}
+
+resource applicationInsightsConfigurationValue 'Microsoft.AppConfiguration/configurationStores/keyValues@2022-05-01' = {
+  name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+  parent: appConfig
+  properties: {
+    value: applicationInsights.properties.ConnectionString
+    contentType: 'text/plain'
+  }
+}
 
 output containerAppEnvironmentName string = containerAppEnvironments.name
 output applicationInsightsResourceName string = applicationInsights.name
