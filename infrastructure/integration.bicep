@@ -38,7 +38,15 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
       name: 'standard'
     }
     tenantId: subscription().tenantId
-
+    enableRbacAuthorization: true
+    accessPolicies: []
+  }
+}
+module developerAccessPoliciesModule 'accessPolicies.bicep' = {
+  name: 'developerAccessPoliciesModule'
+  params: {
+    keyVaultName: keyVault.name
+    principalId: developersGroup
   }
 }
 
