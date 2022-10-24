@@ -14,6 +14,7 @@ param webPubSubSku object
 param developersGroup string
 
 var defaultResourceName = toLower('${systemName}-${environmentName}-${locationAbbreviation}')
+var webPubSubHubname = 'pollstar'
 
 resource configurationDataReaderRole 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' existing = {
   scope: resourceGroup()
@@ -102,7 +103,7 @@ resource webPubSub 'Microsoft.SignalRService/webPubSub@2021-10-01' = {
     publicNetworkAccess: 'Enabled'
   }
   resource hub 'hubs' = {
-    name: 'pollstar'
+    name: webPubSubHubname
     properties: {
       anonymousConnectPolicy: 'allow'
     }
@@ -122,6 +123,14 @@ resource webPubSubConfigurationValue 'Microsoft.AppConfiguration/configurationSt
   properties: {
     contentType: 'application/vnd.microsoft.appconfig.keyvaultref+json;charset=utf-8'
     value: '{"uri":"${webPubSubSecret.properties.secretUri}"}'
+  }
+}
+resource webPubSubHubNameConfigurationValue 'Microsoft.AppConfiguration/configurationStores/keyValues@2022-05-01' = {
+  name: 'PollStarHub'
+  parent: appConfig
+  properties: {
+    contentType: 'text/plain'
+    value: webPubSubHubname
   }
 }
 
