@@ -191,7 +191,7 @@ resource availabilityTest 'Microsoft.Insights/webtests@2022-06-15' = [for avchk 
 }]
 
 resource serviceBusName 'Microsoft.AppConfiguration/configurationStores/keyValues@2022-05-01' = {
-  name: 'ServiceBusName'
+  name: 'Azure:ServiceBus'
   parent: appConfig
   properties: {
     contentType: 'text/plain'
