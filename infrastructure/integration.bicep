@@ -205,7 +205,7 @@ resource serviceBusName 'Microsoft.AppConfiguration/configurationStores/keyValue
   parent: appConfig
   properties: {
     contentType: 'text/plain'
-    value: serviceBus.name
+    value: '${serviceBus.name}.servicebus.windows.net'
   }
 }
 
