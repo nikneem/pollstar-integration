@@ -20,12 +20,25 @@ resource configurationDataReaderRole 'Microsoft.Authorization/roleDefinitions@20
   scope: resourceGroup()
   name: '516239f1-63e1-4d78-a4de-a74fb236a071'
 }
+resource accessSecretsRole 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' existing = {
+  scope: resourceGroup()
+  name: '4633458b-17de-408a-b874-0445c86b69e6'
+}
+
 resource allowContributorForDevelopmentTeam 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   name: guid('${developersGroup}-${configurationDataReaderRole.name}')
   properties: {
     principalId: developersGroup
     principalType: 'Group'
     roleDefinitionId: configurationDataReaderRole.id
+  }
+}
+resource allowSecretsForDevelopmentTeam 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid('${developersGroup}-${accessSecretsRole.name}')
+  properties: {
+    principalId: developersGroup
+    principalType: 'Group'
+    roleDefinitionId: accessSecretsRole.id
   }
 }
 
