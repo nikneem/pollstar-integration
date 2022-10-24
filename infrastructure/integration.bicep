@@ -118,7 +118,7 @@ resource webPubSubSecret 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
   }
 }
 resource webPubSubConfigurationValue 'Microsoft.AppConfiguration/configurationStores/keyValues@2022-05-01' = {
-  name: 'WebPubSub'
+  name: 'Azure:WebPubSub'
   parent: appConfig
   properties: {
     contentType: 'application/vnd.microsoft.appconfig.keyvaultref+json;charset=utf-8'
@@ -126,7 +126,7 @@ resource webPubSubConfigurationValue 'Microsoft.AppConfiguration/configurationSt
   }
 }
 resource webPubSubHubNameConfigurationValue 'Microsoft.AppConfiguration/configurationStores/keyValues@2022-05-01' = {
-  name: 'PollStarHub'
+  name: 'Azure:PollStarHub'
   parent: appConfig
   properties: {
     contentType: 'text/plain'
