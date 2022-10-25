@@ -12,6 +12,7 @@ param availabilityRegions array
 param availabilityEndpoints array
 param webPubSubSku object
 param developersGroup string
+param redisCacheSku object
 
 var defaultResourceName = toLower('${systemName}-${environmentName}-${locationAbbreviation}')
 var webPubSubHubname = 'pollstar'
@@ -23,6 +24,31 @@ resource configurationDataReaderRole 'Microsoft.Authorization/roleDefinitions@20
 resource accessSecretsRole 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' existing = {
   scope: resourceGroup()
   name: '4633458b-17de-408a-b874-0445c86b69e6'
+}
+
+resource containerRegistry 'Microsoft.ContainerRegistry/registries@2022-02-01-preview' = {
+  name: toLower(replace('${defaultResourceName}-acr', '-', ''))
+  location: location
+  sku: {
+    name: 'Standard'
+  }
+  properties: {
+    adminUserEnabled: true
+    publicNetworkAccess: 'Enabled'
+    anonymousPullEnabled: true
+
+  }
+}
+
+resource appConfig 'Microsoft.AppConfiguration/configurationStores@2022-05-01' = {
+  name: '${defaultResourceName}-cfg'
+  location: location
+  identity: {
+    type: 'SystemAssigned'
+  }
+  sku: {
+    name: 'Standard'
+  }
 }
 
 resource allowContributorForDevelopmentTeam 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
@@ -63,6 +89,7 @@ module developerAccessPoliciesModule 'accessPolicies.bicep' = {
   }
 }
 
+// Logging & Instrumentation
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-12-01-preview' = {
   name: '${defaultResourceName}-log'
   location: location
@@ -77,7 +104,6 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-12
     publicNetworkAccessForQuery: 'Enabled'
   }
 }
-
 resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
   name: '${defaultResourceName}-ai'
   location: location
@@ -85,6 +111,14 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
   properties: {
     WorkspaceResourceId: logAnalyticsWorkspace.id
     Application_Type: 'web'
+  }
+}
+resource applicationInsightsConfigurationValue 'Microsoft.AppConfiguration/configurationStores/keyValues@2022-05-01' = {
+  name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+  parent: appConfig
+  properties: {
+    value: applicationInsights.properties.ConnectionString
+    contentType: 'text/plain'
   }
 }
 
@@ -144,37 +178,59 @@ resource webPubSubHubNameConfigurationValue 'Microsoft.AppConfiguration/configur
   }
 }
 
-resource appConfig 'Microsoft.AppConfiguration/configurationStores@2022-05-01' = {
-  name: '${defaultResourceName}-cfg'
-  location: location
-  identity: {
-    type: 'SystemAssigned'
-  }
-  sku: {
-    name: 'Standard'
-  }
-}
-
-resource containerRegistry 'Microsoft.ContainerRegistry/registries@2022-02-01-preview' = {
-  name: toLower(replace('${defaultResourceName}-acr', '-', ''))
-  location: location
-  sku: {
-    name: 'Standard'
-  }
-  properties: {
-    adminUserEnabled: true
-    publicNetworkAccess: 'Enabled'
-    anonymousPullEnabled: true
-
-  }
-}
-
 resource serviceBus 'Microsoft.ServiceBus/namespaces@2022-01-01-preview' = {
   name: '${defaultResourceName}-bus'
   location: location
   sku: {
     name: 'Standard'
     tier: 'Standard'
+  }
+}
+resource serviceBusName 'Microsoft.AppConfiguration/configurationStores/keyValues@2022-05-01' = {
+  name: 'Azure:ServiceBus'
+  parent: appConfig
+  properties: {
+    contentType: 'text/plain'
+    value: '${serviceBus.name}.servicebus.windows.net'
+  }
+}
+resource serviceBusFqdn 'Microsoft.AppConfiguration/configurationStores/keyValues@2022-05-01' = {
+  name: 'ServiceBusConnection:fullyQualifiedNamespace'
+  parent: appConfig
+  properties: {
+    contentType: 'text/plain'
+    value: '${serviceBus.name}.servicebus.windows.net'
+  }
+}
+
+resource redisCache 'Microsoft.Cache/Redis@2019-07-01' = {
+  name: '${defaultResourceName}-cache'
+  location: location
+  properties: {
+    sku: redisCacheSku
+  }
+}
+resource redisCacheSecret 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
+  name: 'RedisCacheKey'
+  parent: keyVault
+  properties: {
+    value: redisCache.listKeys().primaryKey
+  }
+}
+resource redisCacheKeyConfigValue 'Microsoft.AppConfiguration/configurationStores/keyValues@2022-05-01' = {
+  name: 'Cache:Secret'
+  parent: appConfig
+  properties: {
+    contentType: 'application/vnd.microsoft.appconfig.keyvaultref+json;charset=utf-8'
+    value: '{"uri": "${redisCacheSecret.properties.secretUri}"}'
+  }
+}
+resource redisCacheEndpointConfigValue 'Microsoft.AppConfiguration/configurationStores/keyValues@2022-05-01' = {
+  name: 'Cache:Endpoint'
+  parent: appConfig
+  properties: {
+    contentType: 'plain/text'
+    value: redisCache.properties.hostName
   }
 }
 
@@ -199,24 +255,6 @@ resource availabilityTest 'Microsoft.Insights/webtests@2022-06-15' = [for avchk 
     }
   }
 }]
-
-resource serviceBusName 'Microsoft.AppConfiguration/configurationStores/keyValues@2022-05-01' = {
-  name: 'Azure:ServiceBus'
-  parent: appConfig
-  properties: {
-    contentType: 'text/plain'
-    value: '${serviceBus.name}.servicebus.windows.net'
-  }
-}
-
-resource applicationInsightsConfigurationValue 'Microsoft.AppConfiguration/configurationStores/keyValues@2022-05-01' = {
-  name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
-  parent: appConfig
-  properties: {
-    value: applicationInsights.properties.ConnectionString
-    contentType: 'text/plain'
-  }
-}
 
 output containerAppEnvironmentName string = containerAppEnvironments.name
 output applicationInsightsResourceName string = applicationInsights.name

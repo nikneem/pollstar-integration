@@ -18,6 +18,11 @@ param webPubSubSku object = {
   tier: 'Free'
   name: 'Free_F1'
 }
+param redisCacheSku object = {
+  name: 'Standard'
+  family: 'C'
+  capacity: 1
+}
 
 var integrationResourceGroupName = toLower('${systemName}-${environmentName}-${locationAbbreviation}')
 
@@ -38,5 +43,6 @@ module integrationModule 'integration.bicep' = {
     availabilityEndpoints: availabilityEndpoints
     webPubSubSku: webPubSubSku
     developersGroup: developersGroup
+    redisCacheSku: redisCacheSku
   }
 }

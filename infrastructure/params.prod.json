@@ -41,6 +41,13 @@
         "name": "Free_F1"
       }
     },
+    "redisCacheSku": {
+      "value": {
+        "capacity": 1,
+        "family": "C",
+        "name": "Standard"
+      }
+    },
     "developersGroup": {
       "value": "84827723-cffa-465d-813f-9e24c60e4187"
     }
