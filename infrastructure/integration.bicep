@@ -204,7 +204,7 @@ resource serviceBusFqdn 'Microsoft.AppConfiguration/configurationStores/keyValue
 }
 
 resource redisCache 'Microsoft.Cache/Redis@2019-07-01' = {
-  name: '${defaultResourceName}-cache'
+  name: '${defaultResourceName}-redis'
   location: location
   properties: {
     sku: redisCacheSku
