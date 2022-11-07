@@ -17,15 +17,6 @@ param redisCacheSku object
 var defaultResourceName = toLower('${systemName}-${environmentName}-${locationAbbreviation}')
 var webPubSubHubname = 'pollstar'
 
-resource exampleStorageAccount 'Microsoft.Storage/storageAccounts@2022-05-01' = {
-  name: 'markandandrew'
-  location: location
-  kind: 'StorageV2'
-  sku: {
-    name: 'Standard_LRS'
-  }
-}
-
 resource configurationDataReaderRole 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' existing = {
   scope: resourceGroup()
   name: '516239f1-63e1-4d78-a4de-a74fb236a071'
